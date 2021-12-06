@@ -1,23 +1,99 @@
 import React from 'react';
 import { connect } from 'react-redux';
-// import { addNewUser } from '../store/users';
+import { addNewUser } from '../store/users';
+
+const initState = {
+  name: '',
+  password: ''
+}
 
 class Form extends React.Component {
+  constructor(){
+    super()
+    this.state = initState;
+
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
+
+
+  handleChange(event){
+    //console.log("onChange event: ", event.target.value)
+    // this.state
+    let value = event.target.value
+    // let name = 'password' when they are typing on the password input
+    let name = event.target.name // 'password' -> {password: abc123}
+
+    if(event.target.name === 'password') value = value.toUppercase();
+
+    this.setState({ [name]: value})
+  }
+
+  /*
+
+    switch(event.target.name){
+      case 'name':
+        // upstate state
+        this.setState({
+        name: event.target.value
+      })
+      case 'password'
+      this.setState({
+        password: event.target.value
+      })
+    }
+
+
+  */
+
+
+  handleSubmit(event){
+    event.preventDefault();
+
+    // console.log("event.target", event.target)
+
+    // we could reach out with axios or to a thunk
+    // thunk -> this.props.addUser({name: event.target.name.value})
+    // this is how we would send the object from this form to the thunk
+    //this.props.addUser(this.state)
+
+
+    this.setState(initState)
+    // a redireect to anothe component
+
+  }
+
+  capPassword(password){
+    return password.toUpperCase();
+  }
 
   render() {
+    console.log('state: ', this.state)
     return (
       <div>
         <span>Fill out form to add a user</span>
-        <form>
+        <form onSubmit={this.handleSubmit}> 
           <div className='container-form-field'>
-            <label htmlFor='name'>Name</label>
+            <label htmlFor='name' >Name</label>
             <input
               type='text'
               name='name'
+              onChange={this.handleChange}
+              value={this.state.name}
             />
           </div>
-        
-          <button type='submit'>Submit!</button>
+
+          <div className='container-form-field'>
+            <label htmlFor='password' >Password</label>
+            <input
+              type='text'
+              name='password'
+              onChange={this.handleChange}
+              value={this.state.password}
+            />
+          </div>
+      
+          <button type='submit'>Update info!</button>
         </form>
       </div>
     );
@@ -32,20 +108,3 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(null, mapDispatchToProps)(Form);
 
-
-/* 
-
-- Create a form that has a handle submit func
-  -this context and binding ????????
-  - event.preventDefault()
-  - What would we expect in our server from a form submission?
-- Use a handle change to allow for some front end (realtime) validation before form submission
-  - Why is this needed? Why not just let them submit the form and check the inputs?
-  - How do you handle the data in the form? Where to we store it?
-- How do we handle multiple inputs?
-  - What are some issues with how we have this current form filled out?
-- Lets Change the user inputs to upperCase.
-  - Did we let the user see this change?
-  - What is a controlled form???
-
-*/

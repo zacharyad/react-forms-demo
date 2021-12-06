@@ -2156,7 +2156,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+/* harmony import */ var _store_users__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store/users */ "./client/store/users.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2179,7 +2182,12 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 
- // import { addNewUser } from '../store/users';
+
+
+var initState = {
+  name: '',
+  password: ''
+};
 
 var Form = /*#__PURE__*/function (_React$Component) {
   _inherits(Form, _React$Component);
@@ -2187,24 +2195,86 @@ var Form = /*#__PURE__*/function (_React$Component) {
   var _super = _createSuper(Form);
 
   function Form() {
+    var _this;
+
     _classCallCheck(this, Form);
 
-    return _super.apply(this, arguments);
+    _this = _super.call(this);
+    _this.state = initState;
+    _this.handleChange = _this.handleChange.bind(_assertThisInitialized(_this));
+    _this.handleSubmit = _this.handleSubmit.bind(_assertThisInitialized(_this));
+    return _this;
   }
 
   _createClass(Form, [{
+    key: "handleChange",
+    value: function handleChange(event) {
+      //console.log("onChange event: ", event.target.value)
+      // this.state
+      var value = event.target.value; // let name = 'password' when they are typing on the password input
+
+      var name = event.target.name; // 'password' -> {password: abc123}
+
+      if (event.target.name === 'password') value = value.toUppercase();
+      this.setState(_defineProperty({}, name, value));
+    }
+    /*
+       switch(event.target.name){
+        case 'name':
+          // upstate state
+          this.setState({
+          name: event.target.value
+        })
+        case 'password'
+        this.setState({
+          password: event.target.value
+        })
+      }
+      */
+
+  }, {
+    key: "handleSubmit",
+    value: function handleSubmit(event) {
+      event.preventDefault(); // console.log("event.target", event.target)
+      // we could reach out with axios or to a thunk
+      // thunk -> this.props.addUser({name: event.target.name.value})
+      // this is how we would send the object from this form to the thunk
+      //this.props.addUser(this.state)
+
+      this.setState(initState); // a redireect to anothe component
+    }
+  }, {
+    key: "capPassword",
+    value: function capPassword(password) {
+      return password.toUpperCase();
+    }
+  }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, "Fill out form to add a user"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("form", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+      console.log('state: ', this.state);
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, "Fill out form to add a user"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("form", {
+        onSubmit: this.handleSubmit
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         className: "container-form-field"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
         htmlFor: "name"
       }, "Name"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
         type: "text",
-        name: "name"
+        name: "name",
+        onChange: this.handleChange,
+        value: this.state.name
+      })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+        className: "container-form-field"
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
+        htmlFor: "password"
+      }, "Password"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        type: "text",
+        name: "password",
+        onChange: this.handleChange,
+        value: this.state.password
       })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
         type: "submit"
-      }, "Submit!")));
+      }, "Update info!")));
     }
   }]);
 
@@ -2214,28 +2284,12 @@ var Form = /*#__PURE__*/function (_React$Component) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
     addUser: function addUser(user) {
-      return dispatch(addNewUser(user));
+      return dispatch((0,_store_users__WEBPACK_IMPORTED_MODULE_2__.addNewUser)(user));
     }
   };
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_redux__WEBPACK_IMPORTED_MODULE_1__.connect)(null, mapDispatchToProps)(Form));
-/* 
-
-- Create a form that has a handle submit func
-  -this context and binding ????????
-  - event.preventDefault()
-  - What would we expect in our server from a form submission?
-- Use a handle change to allow for some front end (realtime) validation before form submission
-  - Why is this needed? Why not just let them submit the form and check the inputs?
-  - How do you handle the data in the form? Where to we store it?
-- How do we handle multiple inputs?
-  - What are some issues with how we have this current form filled out?
-- Lets Change the user inputs to upperCase.
-  - Did we let the user see this change?
-  - What is a controlled form???
-
-*/
 
 /***/ }),
 
