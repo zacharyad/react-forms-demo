@@ -59,7 +59,7 @@ class Form extends React.Component {
 
 
     this.setState(initState)
-    // a redireect to anothe component
+    // a redireect to anothe component could be used here.
 
   }
 
